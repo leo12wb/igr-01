@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"text/template"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Donation struct {
@@ -29,11 +31,17 @@ var currentNovenaID int
 func main() {
 	loadNovenasFromFile()
 
-	http.HandleFunc("/", donationStore)
-	http.HandleFunc("/list", listDonations)
-	http.HandleFunc("/novena-cad", novenaStore)
-	http.HandleFunc("/print-novena/", detailNovena)
-	http.ListenAndServe(":9080", nil)
+	router := gin.Default()
+
+	router.GET("/", donationStore)
+	router.POST("/", donationStore)
+	router.GET("/list", listDonations)
+	router.GET("/novena-cad", novenaStore)
+	router.POST("/novena-cad", novenaStore)
+	router.GET("/print-novena/:id", detailNovena)
+
+	//router.Run(":3000")
+	router.Run()
 
 	saveNovenasToFile()
 }
@@ -67,7 +75,7 @@ func saveNovenasToFile() {
 	}
 }
 
-func serveHTML(w http.ResponseWriter, r *http.Request, content string) {
+func serveHTML(c *gin.Context, content string) {
 	html := `
 		<!DOCTYPE html>
 		<html>
@@ -98,17 +106,15 @@ func serveHTML(w http.ResponseWriter, r *http.Request, content string) {
 		</html>
 	`
 
-	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte(html))
+	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(html))
 }
 
-func donationStore(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		r.ParseForm()
-		novenaName := r.FormValue("novena")
-		name := r.FormValue("name")
-		donation := r.FormValue("donation")
-		date := r.FormValue("date")
+func donationStore(c *gin.Context) {
+	if c.Request.Method == http.MethodPost {
+		novenaName := c.PostForm("novena")
+		name := c.PostForm("name")
+		donation := c.PostForm("donation")
+		date := c.PostForm("date")
 
 		var targetNovena *Novena
 		for i := range novenas {
@@ -152,10 +158,10 @@ func donationStore(w http.ResponseWriter, r *http.Request) {
 		</form>
 	`
 
-	serveHTML(w, r, content)
+	serveHTML(c, content)
 }
 
-func listDonations(w http.ResponseWriter, r *http.Request) {
+func listDonations(c *gin.Context) {
 	tmpl := `
 		<!DOCTYPE html>
 		<html>
@@ -218,15 +224,15 @@ func listDonations(w http.ResponseWriter, r *http.Request) {
 	`
 
 	tmplParsed := template.Must(template.New("").Parse(tmpl))
-	w.Header().Set("Content-Type", "text/html")
-	tmplParsed.Execute(w, novenas)
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	tmplParsed.Execute(c.Writer, novenas)
 }
 
-func detailNovena(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Path[len("/print-novena/"):]
+func detailNovena(c *gin.Context) {
+	id := c.Param("id")
 	novenaID, err := strconv.Atoi(id)
 	if err != nil {
-		http.Error(w, "Invalid Novena ID", http.StatusBadRequest)
+		c.String(http.StatusBadRequest, "Invalid Novena ID")
 		return
 	}
 
@@ -239,7 +245,7 @@ func detailNovena(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if targetNovena == nil {
-		http.Error(w, "Novena not found", http.StatusNotFound)
+		c.String(http.StatusNotFound, "Novena not found")
 		return
 	}
 
@@ -291,16 +297,15 @@ func detailNovena(w http.ResponseWriter, r *http.Request) {
 	`
 
 	tmplParsed := template.Must(template.New("").Parse(tmpl))
-	w.Header().Set("Content-Type", "text/html")
-	tmplParsed.Execute(w, targetNovena)
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	tmplParsed.Execute(c.Writer, targetNovena)
 }
 
-func novenaStore(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		r.ParseForm()
-		novenaName := r.FormValue("novena")
-		dateinicio := r.FormValue("dateinicio")
-		datefim := r.FormValue("datefim")
+func novenaStore(c *gin.Context) {
+	if c.Request.Method == http.MethodPost {
+		novenaName := c.PostForm("novena")
+		dateinicio := c.PostForm("dateinicio")
+		datefim := c.PostForm("datefim")
 
 		var targetNovena *Novena
 		for i := range novenas {
@@ -335,5 +340,5 @@ func novenaStore(w http.ResponseWriter, r *http.Request) {
 		</form>
 	`
 
-	serveHTML(w, r, content)
+	serveHTML(c, content)
 }
