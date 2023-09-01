@@ -36,6 +36,9 @@ func main() {
 	/*desativado por enquanto*/
 	//router.GET("/", donationStore)
 	//router.POST("/", donationStore)
+
+	router.GET("/", home)
+
 	router.GET("/list", listDonations)
 	router.GET("/novena-cad", novenaStore)
 	router.POST("/novena-cad", novenaStore)
@@ -108,6 +111,14 @@ func serveHTML(c *gin.Context, content string) {
 	`
 
 	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(html))
+}
+
+func home(c *gin.Context){
+	content := `
+		<h1 class="mb-4">Bem vido!</h1>
+	`
+
+	serveHTML(c, content)
 }
 
 func donationStore(c *gin.Context) {
