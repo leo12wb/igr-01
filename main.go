@@ -33,15 +33,19 @@ func main() {
 
 	router := gin.Default()
 
-	router.GET("/", donationStore)
-	router.POST("/", donationStore)
+	/*desativado por enquanto*/
+	//router.GET("/", donationStore)
+	//router.POST("/", donationStore)
+
+	router.GET("/", home)
+
 	router.GET("/list", listDonations)
 	router.GET("/novena-cad", novenaStore)
 	router.POST("/novena-cad", novenaStore)
 	router.GET("/print-novena/:id", detailNovena)
 
-	//router.Run(":3000")
-	router.Run()
+	router.Run(":3000")
+	//router.Run()
 
 	saveNovenasToFile()
 }
@@ -89,12 +93,12 @@ func serveHTML(c *gin.Context, content string) {
 				<div class="container">
 					<a class="navbar-brand" href="/">Novena App</a>
 					<ul class="navbar-nav ml-auto">
-						<li class="nav-item">
+						<!--<li class="nav-item">
 							<a class="nav-link" href="/novena-cad">Cadastrar Novena</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="/list">Ver Doações</a>
-						</li>
+						</li>-->
 					</ul>
 				</div>
 			</nav>
@@ -107,6 +111,14 @@ func serveHTML(c *gin.Context, content string) {
 	`
 
 	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(html))
+}
+
+func home(c *gin.Context){
+	content := `
+		<h1 class="mb-4">Bem vido!</h1>
+	`
+
+	serveHTML(c, content)
 }
 
 func donationStore(c *gin.Context) {
