@@ -93,12 +93,12 @@ func serveHTML(c *gin.Context, content string) {
 				<div class="container">
 					<a class="navbar-brand" href="/">Novena App</a>
 					<ul class="navbar-nav ml-auto">
-						<li class="nav-item">
+						<!--<li class="nav-item">
 							<a class="nav-link" href="/novena-cad">Cadastrar Novena</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="/list">Ver Doações</a>
-						</li>
+						</li>-->
 					</ul>
 				</div>
 			</nav>
