@@ -44,8 +44,8 @@ func main() {
 	router.POST("/novena-cad", novenaStore)
 	router.GET("/print-novena/:id", detailNovena)
 
-	//router.Run(":3000")
-	router.Run()
+	router.Run(":3000")
+	//router.Run()
 
 	saveNovenasToFile()
 }
