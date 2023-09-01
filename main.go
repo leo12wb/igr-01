@@ -33,8 +33,9 @@ func main() {
 
 	router := gin.Default()
 
-	router.GET("/", donationStore)
-	router.POST("/", donationStore)
+	/*desativado por enquanto*/
+	//router.GET("/", donationStore)
+	//router.POST("/", donationStore)
 	router.GET("/list", listDonations)
 	router.GET("/novena-cad", novenaStore)
 	router.POST("/novena-cad", novenaStore)
