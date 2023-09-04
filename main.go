@@ -59,6 +59,44 @@ func main() {
 	saveNovenasToFile()
 }
 
+func missaStore(c *gin.Context){
+
+    if c.Request.Method == http.MethodPost {
+		missaName := c.PostForm("missa")
+		date := c.PostForm("date")
+
+		var targetMissa *Missa
+		for i := range missas {
+			if missas[i].Name == missaName {
+				targetMissa = &missas[i]
+				break
+			}
+		}
+
+		if targetMissa == nil {
+			currentMissaID++
+			targetMissa = &Missa{
+				Name:      missaName,
+				Date:      date,
+			}
+			missas = append(missas, *targetMissa)
+		}
+	}
+
+	content := `
+		<h1 class="mb-4">Cadastro de Missa</h1>
+		<form method="post" action="/">
+			<label for="missa">Missa:</label>
+			<input type="text" name="missa" required class="form-control mb-2">
+			<label for="date">Data:</label>
+			<input type="date" name="date" required class="form-control mb-2">
+			<input type="submit" value="Cadastrar" class="btn btn-primary">
+		</form>
+	`
+
+	serveHTML(c, content)
+}
+
 func loadNovenasFromFile() {
 	file, err := os.Open("novenas.json")
 	if err != nil {
