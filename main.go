@@ -38,6 +38,7 @@ var currentMissaID int
 
 func main() {
 	loadNovenasFromFile()
+	loadMissasFromFile()
 
 	router := gin.Default()
 
@@ -95,6 +96,20 @@ func missaStore(c *gin.Context){
 	`
 
 	serveHTML(c, content)
+}
+
+func loadMissasFromFile() {
+	file, err := os.Open("missas.json")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&missas)
+	if err != nil {
+		fmt.Println("Error loading missas:", err)
+	}
 }
 
 func loadNovenasFromFile() {
