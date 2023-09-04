@@ -25,8 +25,16 @@ type Novena struct {
 	Donations  []Donation `json:"donations"`
 }
 
+type Missa struct {
+	Name     string `json:"name"`
+	Date     string `json:"date"`
+	Donations  []Donation `json:"donations"`
+}
+
+var missas []Missa
 var novenas []Novena
 var currentNovenaID int
+var currentMissaID int
 
 func main() {
 	loadNovenasFromFile()
