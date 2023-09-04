@@ -46,6 +46,7 @@ func main() {
 	//router.POST("/", donationStore)
 
 	router.GET("/", home)
+	router.GET("/missa-cad", missaStore)
 
 	router.GET("/list", listDonations)
 	router.GET("/novena-cad", novenaStore)
